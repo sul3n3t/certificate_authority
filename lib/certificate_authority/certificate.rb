@@ -90,7 +90,11 @@ module CertificateAuthority
         openssl_cert.add_extension(ext)
       end
 
-      digest = OpenSSL::Digest::Digest.new("SHA512")
+      if signing_profile["digest"].nil?
+        digest = OpenSSL::Digest::Digest.new("SHA512")
+      else
+        digest = OpenSSL::Digest::Digest.new(signing_profile["digest"])
+      end
       self.openssl_body = openssl_cert.sign(parent.key_material.private_key,digest)
       t.close! if t.is_a?(Tempfile)# We can get rid of the ridiculous temp file
       self.openssl_body
